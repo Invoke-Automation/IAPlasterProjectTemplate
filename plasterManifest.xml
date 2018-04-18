@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest
+  schemaVersion="1.1"
+  templateType="Project" xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>IAPlasterProjectTemplate</name>
+    <id>f71bfc3e-c5dd-4069-bb7a-689790b99a62</id>
+    <version>1.0.0</version>
+    <title>Invoke-Automation Project Template</title>
+    <description></description>
+    <author>Tomas Deceuninck</author>
+    <tags></tags>
+  </metadata>
+  <parameters>
+        <parameter name='ModuleName'
+                   type='text'
+                   prompt='Enter the name of the module'/>
+
+        <parameter name='Version'
+                   type='text'
+                   prompt='Enter the version number of the module'
+                   default='0.0.1'/>
+
+        <parameter name='Author'
+                   type='user-fullname'
+                   prompt='Enter the name of the author'/>
+        <parameter name='Email'
+                   type='user-email'
+                   prompt='Enter the email of the author'/>
+
+        <parameter name='Editor'
+                   type='choice'
+                   prompt='Select an editor for editor integration (or None):'
+                   default='1'
+                   store='text' >
+            <choice label='&amp;None'
+                    help="No editor specified."
+                    value="None"/>
+            <choice label='Visual Studio &amp;Code'
+                    help="Your editor is Visual Studio Code."
+                    value="VSCode"/>
+        </parameter>
+
+        <parameter name='CICD'
+                   type='choice'
+                   prompt='Select a CI/CD integration (or None):'
+                   default='0'
+                   store='text' >
+            <choice label='&amp;None'
+                    help="No CI/CD specified."
+                    value="None"/>
+            <choice label='&amp;AppVeyor'
+                    help="Your CI/CD is done using AppVeyor."
+                    value="AppVeyor"/>
+        </parameter>
+  </parameters>
+  <content>
+        <message>&#10;&#10;Scaffolding your PowerShell Module...&#10;&#10;&#10;</message>
+
+        <!-- Module Folder Structure -->
+        <!-- Manifest -->
+        <newModuleManifest destination='${PLASTER_PARAM_ModuleName}\${PLASTER_PARAM_ModuleName}.psd1'
+                           moduleVersion='$PLASTER_PARAM_Version'
+                           rootModule='${PLASTER_PARAM_ModuleName}.psm1'
+                           encoding='UTF8-NoBOM'
+                           openInEditor="true"/>
+        <!-- Module File -->
+        <file source='Module\Module.psm1'
+              destination='${PLASTER_PARAM_ModuleName}\${PLASTER_PARAM_ModuleName}.psm1'/>
+        <!-- Settings.xml -->
+        <file source='Module\Settings.xml'
+              destination='${PLASTER_PARAM_ModuleName}\Settings.xml'/>
+        <!-- Private folder + _Classes file -->
+        <file source='Module\Private\_Classes.ps1'
+              destination='${PLASTER_PARAM_ModuleName}\Private\_Classes.ps1'/>
+        <!-- Public folder + Demo cmdlet -->
+        <file source='Module\Public\Rename-Me.ps1'
+              destination='${PLASTER_PARAM_ModuleName}\Public\Rename-Me.ps1'/>
+        
+        <!-- Tests -->
+        <templateFile source='Tests\_InitializeTests.ps1'
+                      destination='Tests\_InitializeTests.ps1' />
+        <templateFile source='Tests\Module.T.ps1'
+                      destination='Tests\${PLASTER_PARAM_ModuleName}.Tests.ps1' />
+        <file source='Tests\PSScriptAnalyzerSettings.psd1'
+                  destination='PSScriptAnalyzerSettings.psd1'/>
+        
+        <!-- Build -->
+        <templateFile   condition="$PLASTER_PARAM_CICD -eq 'None'"
+                        source='Build\Module.B.local.ps1'
+                        destination='${PLASTER_PARAM_ModuleName}.Build.ps1' />
+        <templateFile   condition="$PLASTER_PARAM_CICD -eq 'AppVeyor'"
+                        source='Build\Module.B.AppVeyor.ps1'
+                        destination='${PLASTER_PARAM_ModuleName}.Build.ps1' />
+        <templateFile   condition="$PLASTER_PARAM_CICD -eq 'AppVeyor'"
+                        source='Build\appveyor.yml'
+                        destination='appveyor.yml' />
+
+        <!-- Meta -->
+        <file source='Meta\.gitignore'
+              destination='.gitignore'/>
+        <file source='Meta\LICENSE.txt'
+              destination='LICENSE.txt'/>
+        <templateFile source='Meta\README.md'
+              destination='README.md'/>
+
+        <!-- Editor -->
+        <file condition="$PLASTER_PARAM_Editor -eq 'VSCode'"
+              source='Editor\VSCode\settings.json'
+              destination='.vscode\settings.json' />
+        <file condition="$PLASTER_PARAM_Editor -eq 'VSCode'"
+              source='Editor\VSCode\tasks.json'
+              destination='.vscode\tasks.json' />
+
+        
+
+        <requireModule name="Pester" minimumVersion="4.0.3"
+            message="Without Pester, you will not be able to run the provided Pester test to validate your module manifest file.`nWithout version 4.0.3, VS Code will not display Pester warnings and errors in the Problems panel."/>
+        <requireModule name="InvokeBuild" minimumVersion="5.0.1"
+                message="Without InvokeBuild, you will not be able to build your project."/>
+        <requireModule name="platyPS" minimumVersion="0.9.0"
+                message="Without platyPS, you will not be able to generate documentation."/>
+        <requireModule name="PSScriptAnalyzer" minimumVersion="1.16.1"
+                message="Without PSScriptAnalyzer, you will not be able to analyse your code."/>
+
+        <message>
+
+Your new PowerShell module project '$PLASTER_PARAM_ModuleName' has been created.
+
+        </message>
+  </content>
+</plasterManifest>

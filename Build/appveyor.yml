@@ -1,0 +1,79 @@
+#          YAML Reference Guide: https://www.appveyor.com/docs/appveyor-yml/
+# Environmental Variables Guide: https://www.appveyor.com/docs/environment-variables/
+#                YAML Validator: https://ci.appveyor.com/tools/validate-yaml
+
+image: Visual Studio 2015
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - git config --global core.autocrlf true
+  - git config --global user.email "<%=$PLASTER_PARAM_Email%>"
+  - git config --global user.name "<%=$PLASTER_PARAM_Author%>"
+
+# Only build commits to these branches
+branches:
+    only:
+      - master
+      - dev
+
+# Ignore testing a commit if only the README.md file changed
+# Or if various strings are found in the commit message: updated readme, update readme, update docs, update version, update appveyor
+skip_commits:
+  files:
+    - README.md
+    - CONTRIBUTING.md
+    - .github/
+    - .vscode/
+  message: /updated readme.*|update readme.*s|update docs.*|update version.*|update appveyor.*/
+
+# Do not build on tags
+skip_tags: true
+
+# There's no need to alter the build number for a Pull Request (PR) since they don't modify anything
+pull_requests:
+  do_not_increment_build_number: true
+
+# PowerShell Gallery API key for publishing an update to the module
+# The "secure:" value is the Appveyor encryption of the key
+environment:
+  NuGetApiKey:
+    secure: 
+  GitHubKey:
+    secure: 
+
+# Install NuGet to interact with the PowerShell Gallery
+install:
+  - ps: |
+      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.208 -Force | Out-Null
+      Install-Module -Name InvokeBuild -Force | Out-Null
+      Install-Module -Name Pester -Force | Out-Null
+      Install-Module -Name PSScriptAnalyzer -Force | Out-Null
+      Install-Module -Name PlatyPS -Force | Out-Null
+
+before_build:
+  - ps: |
+      Invoke-Build -Task ShowAppVeyorDebug
+      Invoke-Build -Task GetVersion
+
+# run your custom scripts instead of automatic MSBuild
+build_script:
+  - ps: Invoke-Build -Task AppVeyorBuild
+
+# Invoke Pester to run all of the unit tests, then save the results into XML in order to populate the AppVeyor tests section
+# If any of the tests fail, consider the pipeline failed
+test_script:
+  - ps: Invoke-Build -Task PesterTests
+
+# scripts to run before deployment 
+deploy_script: 
+  - ps: Invoke-Build -Task AppVeyorPublish
+
+on_success:
+  - ps: |
+      git config --global credential.helper store
+      Add-Content "$env:USERPROFILE\.git-credentials" "https://$($env:GitHubKey):x-oauth-basic@github.com`n"
+      git add --all
+      git commit -m "Update version to $env:APPVEYOR_BUILD_VERSION"
+      git rebase HEAD $env:APPVEYOR_REPO_BRANCH
+      git push
+      Write-Host "$ModuleName PowerShell Module version $env:APPVEYOR_BUILD_VERSION published to GitHub." -ForegroundColor Cyan

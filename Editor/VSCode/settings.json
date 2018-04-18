@@ -1,0 +1,9 @@
+{
+    // TABS not spaces!
+    "editor.tabSize": 4,
+    "editor.insertSpaces": false,
+    // PowerShell formatting
+    "powershell.codeFormatting.preset": "OTBS",
+    // When enabled, will trim trailing whitespace when you save a file.
+    "files.trimTrailingWhitespace": true
+}
