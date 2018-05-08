@@ -1,8 +1,8 @@
 # Load Module settings file
 try {
-	$script:SETTINGS = ([xml](Get-Content "$PSScriptRoot\Settings.xml")).Settings
+	$script:SETTINGS = (Get-Content (Join-Path $PSScriptRoot 'Settings.json') | ConvertFrom-Json)
 } catch {
-	throw 'Could not load settings.xml file.'
+	throw 'Could not load settings.json file.'
 }
 
 # Get public and private function defenition files.
