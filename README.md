@@ -1,11 +1,15 @@
 # IA Base Project Template
+
 Plaster project template
 
 ## Getting started
+
 Download the template into a folder
+
 ```powershell
 Invoke-Plaster -TemplatePath <PathToFolder> -DestinationPath <PathForTheNewProject>
 ```
+
 Now you can start working in the newly created Project.
 
 ## Legal and Licensing

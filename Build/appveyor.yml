@@ -59,11 +59,6 @@ before_build:
 build_script:
   - ps: Invoke-Build -Task AppVeyorBuild
 
-# Invoke Pester to run all of the unit tests, then save the results into XML in order to populate the AppVeyor tests section
-# If any of the tests fail, consider the pipeline failed
-test_script:
-  - ps: Invoke-Build -Task PesterTests
-
 # scripts to run before deployment 
 deploy_script: 
   - ps: Invoke-Build -Task AppVeyorPublish
