@@ -82,7 +82,7 @@ Add-BuildTask PesterTests {
 			(New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
 		}
 		Remove-Item $testResultsFile -Force
-		GetVersion ($result.FailedCount -eq 0) "$($result.FailedCount) Pester test(s) failed."
+		Assert-Build ($result.FailedCount -eq 0) "$($result.FailedCount) Pester test(s) failed."
 	} catch {
 		throw
 	}

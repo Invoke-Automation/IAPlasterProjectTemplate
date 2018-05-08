@@ -12,7 +12,7 @@ Install-Module -Name <%=$PLASTER_PARAM_ModuleName%>
 
 ## Legal and Licensing
 
-IACompliance is licensed under the [MIT license](LICENSE.txt).
+<%=$PLASTER_PARAM_ModuleName%> is licensed under the [MIT license](LICENSE.txt).
 
 ## Code of Conduct
 
