@@ -67,9 +67,9 @@
         <!-- Module File -->
         <file source='Module\Module.psm1'
               destination='${PLASTER_PARAM_ModuleName}\${PLASTER_PARAM_ModuleName}.psm1'/>
-        <!-- Settings.xml -->
-        <file source='Module\Settings.xml'
-              destination='${PLASTER_PARAM_ModuleName}\Settings.xml'/>
+        <!-- Settings.json -->
+        <file source='Module\Settings.json'
+              destination='${PLASTER_PARAM_ModuleName}\Settings.json'/>
         <!-- Private folder + _Classes file -->
         <file source='Module\Private\_Classes.ps1'
               destination='${PLASTER_PARAM_ModuleName}\Private\_Classes.ps1'/>
